@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roblox English Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#141414; --paper:#fff7e6; --yellow:#ffd93d; --green:#3fb950; --red:#ff5c5c; --blue:#2f6fed; --coin:#ffcf40;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;}
+body{
+  margin:0;min-height:100%;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:#101018;color:#111;
+  overflow-x:hidden;
+}
+.pixel{font-family:'Press Start 2P',monospace,sans-serif;}
+#stage{
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 14px;transition:background .5s ease;
+  background:linear-gradient(180deg,#232946,#3a3d6b);
+}
+#topbar{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;
+  z-index:5;pointer-events:none;
+}
+.badge{
+  pointer-events:auto;
+  background:var(--ink);color:#fff;border:3px solid #000;
+  box-shadow:3px 3px 0 rgba(0,0,0,.4);
+  padding:6px 10px;font-size:11px;border-radius:4px;
+}
+.coinbadge{background:#7a4b00;color:var(--coin);}
+.soundbadge{cursor:pointer;user-select:none;}
+.panel{
+  position:relative;z-index:2;
+  width:100%;max-width:440px;background:var(--paper);color:var(--ink);
+  border:4px solid #000;border-radius:10px;
+  box-shadow:0 0 0 4px #fff, 6px 6px 0 rgba(0,0,0,.35);
+  padding:22px 18px;text-align:center;margin-top:34px;
+}
+h1.pixel{font-size:15px;line-height:1.6;margin:0 0 10px;}
+.icon{font-size:44px;margin-bottom:6px;animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+.sprite-wrap{width:84px;height:140px;position:relative;margin:0 auto 12px;animation:bob 2.2s ease-in-out infinite;}
+.sprite{position:absolute;top:0;left:0;width:7px;height:7px;box-shadow:var(--sh);}
+@keyframes bob{0%,100%{transform:scale(1.12) translateY(0);}50%{transform:scale(1.12) translateY(-6px);}}
+#rain{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1;}
+.drop{position:absolute;top:-10%;animation:fall linear infinite;opacity:.85;filter:drop-shadow(0 2px 1px rgba(0,0,0,.25));}
+@keyframes fall{from{transform:translateY(-10vh) rotate(0deg);}to{transform:translateY(115vh) rotate(20deg);}}
+#floor{position:fixed;left:0;right:0;bottom:0;height:28px;z-index:1;background-repeat:repeat-x;background-size:60px 28px;border-top:3px solid rgba(0,0,0,.45);animation:scrollFloor 2.4s linear infinite;}
+@keyframes scrollFloor{from{background-position-x:0;}to{background-position-x:60px;}}
+.confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:burst ease-out forwards;}
+@keyframes burst{0%{transform:translate(0,0) rotate(0deg);opacity:1;}100%{transform:translate(var(--dx,0),220px) rotate(360deg);opacity:0;}}
+@media (prefers-reduced-motion:reduce){.drop{animation:none;opacity:.3;}.sprite-wrap{animation:none;transform:scale(1.12);}.icon{animation:none;}#floor{animation:none;}.confetti{animation:none;opacity:0;}}
+p.scn{font-size:15px;margin:6px 0 2px;line-height:1.45;}
+p.q{font-weight:700;font-size:16px;margin:4px 0 16px;}
+.opt{
+  display:block;width:100%;text-align:left;margin:9px 0;padding:12px 14px;
+  font-size:14px;border:3px solid #000;border-radius:6px;background:#fff;
+  box-shadow:3px 3px 0 #000;cursor:pointer;transition:transform .1s;
+}
+.opt:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000;}
+.opt.correct{background:var(--green);color:#fff;}
+.opt.wrong{background:var(--red);color:#fff;animation:shake .35s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.opt:disabled{cursor:default;}
+.msg{font-size:13px;margin:10px 0 4px;min-height:18px;font-weight:700;}
+.btn{
+  font-family:'Press Start 2P',monospace;font-size:11px;color:#111;
+  background:var(--yellow);border:3px solid #000;border-radius:6px;
+  padding:12px 18px;margin-top:10px;cursor:pointer;box-shadow:3px 3px 0 #000;
+}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000;}
+.dots{display:flex;justify-content:center;gap:5px;margin:14px 0 4px;flex-wrap:wrap;}
+.dot{width:9px;height:9px;border-radius:50%;background:#00000030;border:1px solid #000;}
+.dot.on{background:var(--coin);animation:dotPop .3s ease;}
+@keyframes dotPop{0%{transform:scale(.4);}70%{transform:scale(1.3);}100%{transform:scale(1);}}
+textarea,input.txt{
+  width:100%;font-size:14px;padding:9px;border:3px solid #000;border-radius:6px;
+  margin:6px 0 12px;font-family:inherit;resize:vertical;
+}
+.lvltag{font-size:10px;opacity:.65;letter-spacing:.5px;}
+@media (max-width:380px){.panel{padding:18px 14px;}h1.pixel{font-size:13px;}}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <span class="badge" id="lvlbadge">Nivel 1/10</span>
+  <span class="badge coinbadge">🪙 <span id="coincount">0</span></span>
+  <span class="badge soundbadge" id="soundBtn">🔊</span>
+</div>
+<div id="rain"></div>
+<div id="floor"></div>
+<div id="stage"><div id="game"></div></div>
+
+<script>
+const LV=[
+{ic:'🏡',t:'Brookhaven',sc:"You are new in Brookhaven and you don't have a house.",q:'What do you do?',
+ o:['I look for a house.','I look a house.','I looking house.'],c:0,
+ bg:'linear-gradient(180deg,#8fd3f4,#6fd08c 65%,#4fae5e)',rn:['🏠','🔑','🌳','🛋️'],
+ fl:'repeating-linear-gradient(90deg,#6fbf5e 0 30px,#5aa64d 30px 60px)'},
+{ic:'🐶',t:'Adopt Me!',sc:'You get a new dog.',q:'What do you want to do with your dog?',
+ o:['I want to play with it.','I want playing it.','I play with yesterday.'],c:0,
+ bg:'linear-gradient(180deg,#ffd1e8,#d6b3ff)',rn:['🐶','🐾','🦴','💕'],
+ fl:'repeating-linear-gradient(90deg,#f7b8d8 0 30px,#e6a0cf 30px 60px)'},
+{ic:'🚀',t:'Among Us',sc:'You see a dead body! 😱',q:'What do you say?',
+ o:['I found a body!','I find a body yesterday!','I finding body!'],c:0,
+ bg:'linear-gradient(180deg,#0b0c2a,#241a52)',rn:['🚀','👽','💀','❗'],
+ fl:'repeating-linear-gradient(90deg,#3a3f66 0 30px,#2b2f52 30px 60px)'},
+{ic:'⛏️',t:'Minecraft',sc:'It is getting dark and there are zombies.',q:'Complete: "I need to ______."',
+ o:['build a house','building a house','built a house'],c:0,
+ bg:'linear-gradient(180deg,#274b2e,#4c8c4c)',rn:['⛏️','🧟','💎','🌙'],
+ fl:'repeating-linear-gradient(90deg,#6b4a2b 0 30px,#5a3d22 30px 60px)'},
+{ic:'👻',t:'Doors',sc:'A monster is coming!',q:'What do you do?',
+ o:['I run and hide.','I running and hide.','I run yesterday.'],c:0,
+ bg:'linear-gradient(180deg,#1a0f1f,#4a0e57)',rn:['👻','🚪','🔦','😱'],
+ fl:'repeating-linear-gradient(90deg,#3a2140 0 30px,#2a1730 30px 60px)'},
+{ic:'⚔️',t:'Roblox',sc:'Your friend asks: "Where is the enemy?"',q:'What does he say?',
+ o:['He is behind you!','He behind you.','He is behind yesterday.'],c:0,
+ bg:'linear-gradient(180deg,#0038ff,#57c2ff)',rn:['⚔️','🛡️','💥','⚡'],
+ fl:'repeating-linear-gradient(90deg,#2f6fed 0 30px,#1e4fc4 30px 60px)'},
+{ic:'🏆',t:'Roblox Obby',sc:'You finish a very difficult level.',q:'How do you feel?',
+ o:['I am happy!','I happy!','I am happiness!'],c:0,
+ bg:'linear-gradient(180deg,#ff9a3d,#ffd93d)',rn:['🏆','⭐','🧱','🥇'],
+ fl:'repeating-linear-gradient(90deg,#ff8b4d 0 30px,#ffcf40 30px 60px)'},
+{ic:'🎁',t:'Roblox',sc:'Someone gives you 1,000 Robux! 😱',q:'What do you buy?',
+ o:['I buy a new outfit.','I buying a new outfit.','I bought tomorrow.'],c:0,
+ bg:'linear-gradient(180deg,#161616,#caa100)',rn:['🎁','💰','✨','💎'],
+ fl:'repeating-linear-gradient(90deg,#caa100 0 30px,#8a6f00 30px 60px)'},
+{ic:'👽',t:'Among Us',sc:'Someone says: "You are the Impostor!" 😱',q:'What do you say?',
+ o:["No! I'm not the Impostor!","No! I don't Impostor!","No! I not am!"],c:0,
+ bg:'linear-gradient(180deg,#2a0b0b,#7a1a1a)',rn:['👽','🔪','😱','🚨'],
+ fl:'repeating-linear-gradient(90deg,#7a1a1a 0 30px,#560f0f 30px 60px)'}
+];
+const START_RAIN=['🎮','🕹️','⭐','🪙'];
+const CREATIVE_RAIN=['🎮','✨','🌈','💡'];
+const END_RAIN=['🏆','🎉','⭐','🪙'];
+const START_FLOOR='repeating-linear-gradient(90deg,#3a3d6b 0 30px,#232946 30px 60px)';
+const CREATIVE_FLOOR='repeating-linear-gradient(90deg,#ff9a9e 0 30px,#a18cd1 30px 60px)';
+const END_FLOOR='repeating-linear-gradient(90deg,#ffd93d 0 30px,#ff9a3d 30px 60px)';
+function setFloor(css){document.getElementById('floor').style.backgroundImage=css;}
+let cur=0, coins=0, streak=0;
+let best=0;
+try{best=parseInt(localStorage.getItem('rbx_best')||'0');}catch(e){}
+
+let soundOn=true, actx=null;
+function actxGet(){ if(!actx){ try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } return actx; }
+function beep(freq,dur,type,vol,delay){
+  const a=actxGet(); if(!a||!soundOn) return;
+  const t=a.currentTime+delay;
+  const o=a.createOscillator(), g=a.createGain();
+  o.type=type; o.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  o.connect(g); g.connect(a.destination);
+  o.start(t); o.stop(t+dur);
+}
+function sfxCorrect(){beep(660,.12,'square',.18,0);beep(880,.15,'square',.18,.1);beep(1320,.2,'square',.2,.2);}
+function sfxWrong(){beep(160,.25,'sawtooth',.15,0);}
+function sfxCoin(){beep(988,.08,'square',.15,0);beep(1568,.1,'square',.15,.06);}
+function sfxWin(){beep(523,.15,'square',.2,0);beep(659,.15,'square',.2,.12);beep(784,.15,'square',.2,.24);beep(1047,.3,'square',.22,.36);}
+
+// pixel sprite bitmap — versión detallada (gorro, mechones, insignia dorada, jean gastado)
+const ROWS=[
+".HHHHHHHHHH.",
+"..HHHHHHHH..",
+"...HHHHHH...",
+".hhhhhhhhhh.",
+".hhehhhheh..",
+".hhhhhhhhhh.",
+".hhffffffhh.",
+"..ffffffff..",
+"..ffffffff..",
+"..ffmmmmff..",
+"..ffffffff..",
+".fssssssssf.",
+".fsgssdsssf.",
+".fsdssssdsf.",
+".fssssssssf.",
+"..ssssssss..",
+"..pppppppp..",
+"..pwpppwpp..",
+"..ppwppwpp..",
+"..pppppppp.."
+];
+const COL={H:'#141414',h:'#1c1c1c',e:'#3a3a3a',f:'#e0b088',m:'#3a2418',s:'#161616',d:'#eeeeee',g:'#e8c34a',p:'#2b2b30',w:'#55555c'};
+function spriteShadow(){
+  const px=7, out=[];
+  ROWS.forEach((row,y)=>{[...row].forEach((ch,x)=>{
+    if(ch!=='.'&&COL[ch]) out.push(`${x*px}px ${y*px}px 0 ${COL[ch]}`);
+  });});
+  return out.join(',');
+}
+const SPRITE_SH=spriteShadow();
+function spriteHTML(){return `<div class="sprite-wrap"><div class="sprite" style="--sh:${SPRITE_SH}"></div></div>`;}
+function spawnRain(list){
+  const rain=document.getElementById('rain'); let h='';
+  for(let i=0;i<16;i++){
+    const em=list[Math.floor(Math.random()*list.length)];
+    const left=(Math.random()*94+2).toFixed(1);
+    const dur=(6+Math.random()*6).toFixed(1);
+    const delay=(-Math.random()*10).toFixed(1);
+    const size=(15+Math.random()*13).toFixed(0);
+    h+=`<span class="drop" style="left:${left}%;font-size:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${em}</span>`;
+  }
+  rain.innerHTML=h;
+}
+function burstConfetti(n){
+  const rain=document.getElementById('rain');
+  const colors=['#ff5c5c','#ffd93d','#3fb950','#2f6fed','#ff8bd6','#ffffff'];
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');
+    s.className='confetti';
+    s.style.left=(42+Math.random()*16)+'%';
+    s.style.top='34%';
+    s.style.background=colors[Math.floor(Math.random()*colors.length)];
+    s.style.setProperty('--dx',(Math.random()*220-110)+'px');
+    s.style.animationDuration=(0.8+Math.random()*0.6)+'s';
+    rain.appendChild(s);
+    setTimeout(()=>s.remove(),1600);
+  }
+}
+function bindSpriteTap(){
+  const sw=document.querySelector('.sprite-wrap');
+  if(sw) sw.onclick=()=>{sfxCoin();burstConfetti(10);};
+}
+
+function setBg(g){document.getElementById('stage').style.background=g;}
+function updateBar(n){
+  document.getElementById('coincount').textContent=coins;
+  document.getElementById('lvlbadge').textContent = n<=LV.length? `Nivel ${n}/10` : `Nivel 10/10`;
+}
+function dots(n){
+  let h='<div class="dots">';
+  for(let i=0;i<10;i++) h+=`<span class="dot ${i<n?'on':''}"></span>`;
+  h+='</div>';return h;
+}
+
+function showStart(){
+  setBg('linear-gradient(180deg,#232946,#3a3d6b)');
+  spawnRain(START_RAIN);
+  setFloor(START_FLOOR);
+  updateBar(1);
+  document.getElementById('game').innerHTML=`
+    <div class="panel">
+      ${spriteHTML()}
+      <h1 class="pixel">🎮 ROBLOX<br>ENGLISH CHALLENGE</h1>
+      <p class="scn">Ayuda a tu personaje a cruzar 10 niveles de juegos de Roblox respondiendo correctamente en inglés. ¡Gana monedas en cada nivel! 🪙</p>
+      ${best>0?`<p class="lvltag">Mejor puntaje: ${best} 🪙</p>`:''}
+      <button class="btn" id="startBtn">▶ EMPEZAR</button>
+    </div>`;
+  document.getElementById('startBtn').onclick=()=>{cur=0;coins=0;streak=0;showLevel();};
+  bindSpriteTap();
+}
+
+let missed=false;
+function showLevel(){
+  if(cur>=LV.length){showCreative();return;}
+  const L=LV[cur];
+  setBg(L.bg);
+  spawnRain(L.rn);
+  setFloor(L.fl);
+  updateBar(cur+1);
+  missed=false;
+  document.getElementById('game').innerHTML=`
+    <div class="panel">
+      <span class="lvltag">${L.t}</span>
+      <div class="icon">${L.ic}</div>
+      ${dots(cur)}
+      <p class="scn">${L.sc}</p>
+      <p class="q">${L.q}</p>
+      <div id="opts">
+        ${L.o.map((op,i)=>`<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}) ${op}</button>`).join('')}
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>`;
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.onclick=()=>pick(btn, parseInt(btn.dataset.i), L.c);
+  });
+}
+
+function pick(btn, i, correct){
+  const msg=document.getElementById('msg');
+  if(i===correct){
+    document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+    btn.classList.add('correct');
+    coins+=10;
+    let extra='';
+    if(!missed){
+      streak++;
+      if(streak%3===0){coins+=5; extra=` 🔥 ¡Racha x${streak}! +5 extra`;}
+    }else{streak=0;}
+    document.getElementById('coincount').textContent=coins;
+    sfxCorrect(); burstConfetti(16);
+    msg.style.color='var(--green)';
+    msg.textContent='✅ ¡Correcto! +10 monedas'+extra;
+    const p=document.querySelector('.panel');
+    p.insertAdjacentHTML('beforeend','<button class="btn" id="nextBtn">SIGUIENTE ▶</button>');
+    document.getElementById('nextBtn').onclick=()=>{cur++;showLevel();};
+  }else{
+    missed=true;
+    btn.classList.remove('wrong');void btn.offsetWidth;btn.classList.add('wrong');
+    sfxWrong();
+    msg.style.color='var(--red)';
+    msg.textContent='❌ ¡Casi! Inténtalo de nuevo';
+  }
+}
+
+function showCreative(){
+  setBg('linear-gradient(180deg,#ff9a9e,#fbc2eb 60%,#a18cd1)');
+  spawnRain(CREATIVE_RAIN);
+  setFloor(CREATIVE_FLOOR);
+  updateBar(10);
+  document.getElementById('game').innerHTML=`
+    <div class="panel">
+      <span class="lvltag">Tu Roblox game</span>
+      <div class="icon">🎮</div>
+      ${dots(9)}
+      <p class="scn">Imagine you can make your own Roblox game. Complete these sentences (¡en inglés, con tus propias palabras!):</p>
+      <p class="q" style="text-align:left;">My game is about ______.</p>
+      <input class="txt" id="c1" placeholder="ej: a pizza restaurant">
+      <p class="q" style="text-align:left;">Players have to ______.</p>
+      <input class="txt" id="c2" placeholder="ej: cook and deliver pizzas">
+      <p class="q" style="text-align:left;">It is fun because ______.</p>
+      <input class="txt" id="c3" placeholder="ej: you can race your friends">
+      <div class="msg" id="cmsg"></div>
+      <button class="btn" id="sendBtn">🚀 ENVIAR MI IDEA</button>
+    </div>`;
+  document.getElementById('sendBtn').onclick=()=>{
+    coins+=30; document.getElementById('coincount').textContent=coins;
+    document.getElementById('sendBtn').disabled=true;
+    sfxCoin(); burstConfetti(20);
+    document.getElementById('cmsg').style.color='var(--green)';
+    document.getElementById('cmsg').textContent='✅ ¡Genial idea de juego! +30 monedas';
+    setTimeout(showEnd,1300);
+  };
+}
+
+function showEnd(){
+  setBg('linear-gradient(180deg,#ffd93d,#ff9a3d)');
+  spawnRain(END_RAIN);
+  setFloor(END_FLOOR);
+  sfxWin(); burstConfetti(28);
+  document.getElementById('lvlbadge').textContent='¡Completado! 🏆';
+  if(coins>best){best=coins; try{localStorage.setItem('rbx_best',String(best));}catch(e){}}
+  document.getElementById('game').innerHTML=`
+    <div class="panel">
+      ${spriteHTML()}
+      <h1 class="pixel">🏆 ¡NIVEL COMPLETO!</h1>
+      <p class="scn">Reuniste <b>${coins} monedas 🪙</b> jugando en inglés por Brookhaven, Adopt Me, Among Us, Minecraft, Doors y más.</p>
+      <p class="lvltag">Mejor puntaje: ${best} 🪙</p>
+      <button class="btn" id="againBtn">🔁 JUGAR DE NUEVO</button>
+    </div>`;
+  document.getElementById('againBtn').onclick=showStart;
+  bindSpriteTap();
+}
+
+document.getElementById('soundBtn').onclick=()=>{
+  soundOn=!soundOn;
+  document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
+};
+showStart();
+</script>
+</body>
+</html>
