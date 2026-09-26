@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roblox English Quest</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#0a0e1f; --bg2:#141a3a; --card:#161d3d; --card-b:#232b58;
+    --accent:#33e07a; --accent2:#3d8bff; --gold:#ffd23f; --danger:#ff5470;
+    --text:#eef1ff; --muted:#8b93c4;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    box-sizing:border-box;
+  }
+  *{box-sizing:inherit}
+  html,body{height:100%;margin:0}
+  body{
+    min-height:100%;
+    background:
+      radial-gradient(circle at 20% 0%, #24306b 0%, transparent 45%),
+      radial-gradient(circle at 90% 10%, #2a1f57 0%, transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Trebuchet MS','Comic Sans MS',Verdana,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{max-width:460px;margin:0 auto;padding:18px 16px 32px;display:flex;flex-direction:column;gap:14px;min-height:100vh}
+
+  /* --- Roblox-style blocky avatar, built from CSS shapes (no image reuse) --- */
+  .avatar{position:relative;width:74px;height:104px;flex:none}
+  .avatar .hair{position:absolute;top:0;left:8px;width:58px;height:22px;background:#141414;border-radius:16px 16px 4px 4px}
+  .avatar .hat{position:absolute;top:-13px;left:5px;width:64px;height:18px;background:#181818;border-radius:6px 6px 2px 2px;z-index:3}
+  .avatar .hat::after{content:'';position:absolute;top:15px;left:-11px;width:86px;height:7px;background:#0d0d0d;border-radius:50%}
+  .avatar .head{position:absolute;top:8px;left:15px;width:44px;height:38px;background:#e6b384;border-radius:13px}
+  .avatar .head::after{content:'';position:absolute;bottom:9px;left:12px;width:20px;height:9px;border-bottom:3px solid #4a3320;border-radius:0 0 12px 12px}
+  .avatar .body{position:absolute;top:44px;left:9px;width:56px;height:38px;background:#161616;border-radius:9px}
+  .avatar .body::after{content:'\2726';position:absolute;top:5px;left:22px;color:var(--gold);font-size:11px}
+  .avatar .arm{position:absolute;top:47px;width:13px;height:30px;background:#e6b384;border-radius:6px}
+  .avatar .arm.l{left:-4px}.avatar .arm.r{right:-4px}
+  .avatar .legs{position:absolute;top:80px;left:11px;width:52px;height:26px;background:linear-gradient(#242424,#3d3d3d);border-radius:0 0 8px 8px}
+  .avatar.lg{width:120px;height:168px;margin:6px auto}
+  .avatar.lg .hair{left:13px;width:94px;height:35px}
+  .avatar.lg .hat{top:-21px;left:8px;width:104px;height:29px}
+  .avatar.lg .hat::after{top:24px;left:-18px;width:140px;height:11px}
+  .avatar.lg .head{top:13px;left:24px;width:72px;height:62px}
+  .avatar.lg .head::after{bottom:15px;left:20px;width:32px;height:15px}
+  .avatar.lg .body{top:71px;left:15px;width:90px;height:62px}
+  .avatar.lg .body::after{font-size:18px;top:8px;left:36px}
+  .avatar.lg .arm{top:76px;width:21px;height:48px}
+  .avatar.lg .arm.l{left:-7px}.avatar.lg .arm.r{right:-7px}
+  .avatar.lg .legs{top:129px;left:18px;width:84px;height:42px}
+
+  .card{background:var(--card);border:2px solid var(--card-b);border-radius:18px;padding:20px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .card.shake{animation:shake .35s}
+  .card.pop{animation:pop .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+  h1{font-size:1.35rem;margin:.2em 0;line-height:1.2}
+  h2{font-size:1rem;color:var(--gold);margin:.2em 0 .6em;font-weight:700}
+  p{margin:.4em 0}
+  .muted{color:var(--muted);font-size:.92rem}
+
+  .btn{display:block;width:100%;padding:15px;margin-top:10px;border:none;border-radius:14px;
+    background:linear-gradient(180deg,var(--accent),#1cb85f);color:#04180c;font-weight:800;font-size:1.05rem;
+    cursor:pointer;box-shadow:0 5px 0 #0f7a3c;transition:transform .08s}
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 #0f7a3c}
+  .btn.ghost{background:transparent;border:2px solid var(--card-b);color:var(--text);box-shadow:none}
+  .btn.ghost:active{transform:translateY(1px)}
+  .btn.small{padding:9px;font-size:.85rem}
+  .btn.opt{background:var(--bg2);color:var(--text);border:2px solid var(--card-b);box-shadow:0 4px 0 #0a0e22;text-align:left}
+  .btn.opt:active{transform:translateY(3px);box-shadow:0 1px 0 #0a0e22}
+
+  .topbar{display:flex;align-items:center;gap:12px}
+  .bar{flex:1;height:14px;background:var(--bg2);border:2px solid var(--card-b);border-radius:8px;overflow:hidden}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:8px;transition:width .4s}
+  .levelbadge{font-size:.95rem;color:var(--muted);text-align:center;letter-spacing:.3px}
+  .hearts{text-align:center;font-size:1.2rem}
+
+  .q{font-size:1.1rem;font-weight:700;margin-bottom:14px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+
+  .sentence{min-height:44px;background:var(--bg2);border:2px dashed var(--card-b);border-radius:12px;padding:10px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+  .pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:6px}
+  .chip{padding:9px 14px;border-radius:10px;border:2px solid var(--card-b);background:var(--bg2);color:var(--text);font-weight:700;cursor:pointer;font-size:1rem}
+  .chip.placed{background:var(--accent2);border-color:#2261c9;color:#06122c;cursor:pointer}
+
+  .fb{min-height:26px;text-align:center;font-weight:700}
+  .fb.ok{color:var(--accent)}
+  .fb.bad{color:var(--danger)}
+
+  .stats{display:flex;justify-content:center;gap:22px;margin:14px 0;font-weight:700}
+  .summary{text-align:left;background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+  .summary p{margin:.3em 0;font-size:.95rem}
+  .reset-link{margin-top:14px;background:none;border:none;color:var(--muted);text-decoration:underline;font-size:.85rem;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------- Game data ---------- */
+// "mc" = multiple choice. "build" = drag/tap the words into the right order.
+// boss:true adds the 5-heart life system to that level.
+const LEVELS = [
+  { title:"WHAT ARE THEY DOING?", icon:"🎮", type:"mc", qs:[
+    {p:"What is he doing? 🎮", o:["He plays Roblox.","He is playing Roblox.","He play Roblox."], c:1},
+    {p:"What is she doing? 🍕", o:["She is eating.","She eat.","She eats now."], c:0},
+    {p:"What are they doing? 🏃", o:["They run.","They is running.","They are running."], c:2},
+    {p:"What is he doing? 😴", o:["He is sleeping.","He sleep.","He sleeps."], c:0},
+    {p:"What is she doing? 📚", o:["She study.","She is studying.","She studying."], c:1},
+  ]},
+  { title:"NOW OR EVERY DAY?", icon:"⏰", type:"mc", qs:[
+    {p:"A boy is playing Roblox right now. Pick the sentence:", o:["I play Roblox every day.","I am playing Roblox."], c:1},
+    {p:"You eat pizza every Friday. Pick the sentence:", o:["I eat pizza every Friday.","I am eating pizza."], c:0},
+    {p:"She is watching TV right now. Pick the sentence:", o:["She watches TV.","She is watching TV."], c:1},
+    {p:"He goes to school every day. Pick the sentence:", o:["He goes to school every day.","He is going to school."], c:0},
+    {p:"They are sleeping now. Pick the sentence:", o:["They sleep now.","They are sleeping now."], c:1},
+    {p:"I study English every week. Pick the sentence:", o:["I study English every week.","I am studying English."], c:0},
+  ]},
+  { title:"BUILD THE SENTENCE", icon:"🧱", type:"build", qs:[
+    {w:["I","am","playing","Roblox","now"]},
+    {w:["I","play","Roblox","every","day"]},
+    {w:["She","is","eating","pizza"]},
+    {w:["He","studies","every","night"]},
+    {w:["They","are","running","fast"]},
+  ]},
+  { title:"ROBLOX CHAT", icon:"💬", type:"mc", qs:[
+    {p:'NPC: "Hey! What are you doing?"', o:["I play Roblox every day.","I am playing Roblox.","I playing Roblox."], c:1},
+    {p:'NPC: "Do you play Roblox every day?"', o:["Yes, I do.","Yes, I am.","Yes, I playing."], c:0},
+    {p:'NPC: "What are you eating?"', o:["I eat pizza.","I am eating pizza.","I eating pizza."], c:1},
+    {p:'NPC: "Do you like Roblox?"', o:["Yes, I do.","Yes, I like.","Yes, I am."], c:0},
+    {p:'NPC: "What is she doing?"', o:["She is studying.","She study.","She studying."], c:0},
+  ]},
+  { title:"BOSS FIGHT", icon:"👹", type:"mc", boss:true, qs:[
+    {p:"You are eating pizza RIGHT NOW. What are you doing?", o:["I eat pizza.","I am eating pizza.","I eating pizza."], c:1},
+    {p:"You play Roblox every Saturday. What do you do?", o:["I am playing Roblox.","I play Roblox.","I playing Roblox."], c:1},
+    {p:"He is running now. What is he doing?", o:["He runs.","He is running.","He run."], c:1},
+    {p:"She studies every night. What does she do?", o:["She is studying.","She studies every night.","She studying."], c:1},
+    {p:"They are sleeping now. What are they doing?", o:["They sleep.","They are sleeping.","They sleeping."], c:1},
+  ]},
+];
+const TOTAL_Q = LEVELS.reduce((s,l)=>s+l.qs.length,0);
+const LS_KEY = "reng_progress_v1";
+
+/* ---------- State ---------- */
+let S = {scr:"welcome", li:0, qi:0, correct:0, attempts:0, hearts:5, built:[], pool:[]};
+
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(
+    {scr:S.scr, li:S.li, qi:S.qi, correct:S.correct, attempts:S.attempts, hearts:S.hearts})); }
+  catch(e){}
+}
+function load(){
+  try{ const d=JSON.parse(localStorage.getItem(LS_KEY)); if(d) Object.assign(S,d); }
+  catch(e){}
+}
+
+/* ---------- Avatar (built from CSS shapes, not a copied image) ---------- */
+function avatarHTML(cls){
+  return '<div class="avatar '+(cls||'')+'">'+
+    '<div class="hair"></div><div class="hat"></div><div class="head"></div>'+
+    '<div class="arm l"></div><div class="arm r"></div><div class="body"></div>'+
+    '<div class="legs"></div></div>';
+}
+
+/* ---------- Screens ---------- */
+function render(){
+  save();
+  const app = document.getElementById("app");
+  if(S.scr==="welcome") app.innerHTML = welcomeHTML();
+  else if(S.scr==="final") app.innerHTML = finalHTML();
+  else app.innerHTML = questionHTML();
+  if(S.scr==="playing" && LEVELS[S.li].type==="build") setupBuild();
+}
+
+function welcomeHTML(){
+  const hasSave = (S.attempts>0 && S.scr!=="final");
+  return `
+    <div class="card">
+      <h1>🎮 ROBLOX ENGLISH QUEST</h1>
+      <h2>MISSION 3: NOW OR EVERY DAY?</h2>
+      ${avatarHTML("lg")}
+      <p class="muted">Choose the correct English sentence to move forward!</p>
+      <button class="btn" onclick="startGame(false)">START MISSION 🚀</button>
+      ${hasSave ? '<button class="btn ghost" onclick="startGame(true)">CONTINUE ▶️</button>' : ""}
+    </div>`;
+}
+
+function startGame(cont){
+  if(!cont){ S.li=0; S.qi=0; S.correct=0; S.attempts=0; S.hearts=5; }
+  S.scr = (S.scr==="playing" && cont) ? "playing" : "playing";
+  render();
+}
+
+function questionHTML(){
+  const lvl = LEVELS[S.li], q = lvl.qs[S.qi];
+  const done = LEVELS.slice(0,S.li).reduce((s,l)=>s+l.qs.length,0) + S.qi;
+  const pct = Math.round(done / TOTAL_Q * 100);
+  const heartsHTML = lvl.boss
+    ? `<div class="hearts">${"❤️".repeat(S.hearts)}${"🖤".repeat(5-S.hearts)}</div>` : "";
+
+  let body;
+  if(lvl.type==="mc"){
+    body = `<div class="q">${q.p}</div>
+      <div class="opts">${q.o.map((o,i)=>`<button class="btn opt" onclick="answerMC(${i})">${o}</button>`).join("")}</div>`;
+  } else {
+    body = `<div class="q">Put the words in order 🧱</div>
+      <div id="sentence" class="sentence"></div>
+      <div id="pool" class="pool"></div>
+      <button class="btn" onclick="checkBuild()">CHECK ✅</button>
+      <button class="btn ghost small" onclick="undoBuild()">↩️ Clear</button>`;
+  }
+
+  return `
+    <div class="topbar">${avatarHTML("sm")}<div class="bar"><div class="fill" style="width:${pct}%"></div></div></div>
+    <div class="levelbadge">${lvl.icon} ${lvl.title} — Q${S.qi+1}/${lvl.qs.length}</div>
+    ${heartsHTML}
+    <div class="card">${body}</div>
+    <div id="fb" class="fb"></div>`;
+}
+
+function finalHTML(){
+  const acc = S.attempts ? Math.round(S.correct/S.attempts*100) : 100;
+  return `
+    <div class="card">
+      <h1>🏆 MISSION COMPLETE!</h1>
+      ${avatarHTML("lg")}
+      <p>Great job!</p>
+      <div class="stats"><div>⭐ Correct: ${S.correct}</div><div>🎯 Accuracy: ${acc}%</div></div>
+      <div class="summary">
+        <p>Today you learned:</p>
+        <p>✅ Present Continuous = NOW (I am playing…)</p>
+        <p>✅ Present Simple = EVERY DAY (I play…)</p>
+        <p>✅ Do you…? → Yes, I do. / No, I don't.</p>
+      </div>
+      <button class="btn" onclick="playAgain()">PLAY AGAIN 🚀</button>
+      <button class="reset-link" onclick="resetProgress()">Reset Progress</button>
+    </div>`;
+}
+
+/* ---------- Multiple choice logic ---------- */
+function flashFeedback(ok){
+  const fb = document.getElementById("fb");
+  fb.textContent = ok ? "🎉 Correct!" : "Not quite! Try again.";
+  fb.className = "fb " + (ok ? "ok" : "bad");
+  const card = document.querySelector(".card");
+  card.classList.remove("shake","pop");
+  void card.offsetWidth;
+  card.classList.add(ok ? "pop" : "shake");
+}
+
+function answerMC(i){
+  const lvl = LEVELS[S.li], q = lvl.qs[S.qi];
+  const ok = (i === q.c);
+  S.attempts++;
+  flashFeedback(ok);
+  if(ok){
+    S.correct++;
+    setTimeout(nextStep, 650);
+  } else if(lvl.boss){
+    S.hearts--;
+    if(S.hearts<=0){
+      setTimeout(()=>{ S.hearts=5; S.qi=0; render(); }, 900);
+      return;
+    }
+    save();
+  }
+}
+
+function nextStep(){
+  const lvl = LEVELS[S.li];
+  if(S.qi < lvl.qs.length-1){ S.qi++; }
+  else if(S.li < LEVELS.length-1){ S.li++; S.qi=0; S.hearts=5; }
+  else { S.scr = "final"; }
+  render();
+}
+
+/* ---------- Build-the-sentence logic ---------- */
+function shuffle(arr){
+  arr = [...arr];
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+function setupBuild(){
+  const q = LEVELS[S.li].qs[S.qi];
+  S.built = [];
+  S.pool = shuffle(q.w.map((w,i)=>({w,i})));
+  renderBuild();
+}
+function renderBuild(){
+  document.getElementById("sentence").innerHTML = S.built.length
+    ? S.built.map(o=>`<span class="chip placed" onclick="removeChip(${o.i})">${o.w}</span>`).join(" ")
+    : '<span class="muted">Tap the words below…</span>';
+  document.getElementById("pool").innerHTML = S.pool
+    .filter(o=>!S.built.find(b=>b.i===o.i))
+    .map(o=>`<button class="chip" onclick="addChip(${o.i})">${o.w}</button>`).join("");
+}
+function addChip(i){ const o=S.pool.find(o=>o.i===i); S.built.push(o); renderBuild(); }
+function removeChip(i){ S.built = S.built.filter(o=>o.i!==i); renderBuild(); }
+function undoBuild(){ S.built=[]; renderBuild(); }
+function checkBuild(){
+  const q = LEVELS[S.li].qs[S.qi];
+  S.attempts++;
+  const ok = S.built.length===q.w.length && S.built.every((o,idx)=>o.i===idx);
+  flashFeedback(ok);
+  if(ok){ S.correct++; setTimeout(nextStep, 650); }
+}
+
+/* ---------- Misc ---------- */
+function playAgain(){ S={scr:"welcome",li:0,qi:0,correct:0,attempts:0,hearts:5,built:[],pool:[]}; render(); }
+function resetProgress(){
+  if(confirm("Reset all progress?")){
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+    S = {scr:"welcome", li:0, qi:0, correct:0, attempts:0, hearts:5, built:[], pool:[]};
+    render();
+  }
+}
+
+load();
+if(S.scr==="final") S.scr="welcome"; // never resume straight into the end screen
+render();
+</script>
+</body>
+</html>
